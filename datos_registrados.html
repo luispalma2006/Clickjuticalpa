@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Registrados</title>
+    <head>
+        <link rel="icon" href="clik-removebg-preview.png" type="image/png">
+      </head>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background-color: #2385d4;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        header img {
+            max-height: 60px;
+            margin-right: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #555;
+        }
+
+        /* Estilos del campo de búsqueda */
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 20px auto;
+            display: block;
+            border: 2px solid #64f8b3;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Estilos de la tabla */
+        table {
+            width: 90%;
+            margin: 0 auto 20px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #64f8b3;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        /* Asegurar que los botones estén correctamente alineados */
+        .btn-borrar, .btn-editar {
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            margin: 5px auto;
+            width: 100%;
+        }
+
+        .btn-borrar {
+            background-color: #f31809;
+            color: white;
+            border: none;
+        }
+
+        .btn-editar {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .btn-borrar:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-editar:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            table, input[type="text"] {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            input[type="text"] {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Datos Registrados</h1>
+        <img src="clik-removebg-preview.png" alt="Logo de la empresa">
+    </header>
+
+    <h2>Lista de Usuarios Registrados</h2>
+    
+    <!-- Campo de búsqueda -->
+    <input type="text" id="busqueda" placeholder="Buscar por nombre o producto" onkeyup="filtrarDatos()">
+
+    <table id="tablaUsuarios">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Producto</th>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Detalles</th>
+                <th>Fecha de Ingreso</th>
+                <th>Fecha de Entrega</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="listaUsuarios"></tbody>
+    </table>
+
+    <!-- Formulario para editar un usuario -->
+    <div id="editarFormulario" style="display: none;">
+        <h2>Editar Usuario</h2>
+        <form id="formularioEditar">
+            <label for="editarNombre">Nombre:</label>
+            <input type="text" id="editarNombre" required>
+
+            <label for="editarTelefono">Teléfono:</label>
+            <input type="text" id="editarTelefono" required>
+
+            <label for="editarProducto">Producto:</label>
+            <input type="text" id="editarProducto" required>
+
+            <label for="editarEstado">Estado:</label>
+            <input type="text" id="editarEstado" required>
+
+            <label for="editarDescripcion">Descripción:</label>
+            <input type="text" id="editarDescripcion" required>
+
+            <label for="editarDetalles">Detalles:</label>
+            <input type="text" id="editarDetalles" required>
+
+            <label for="editarFechaIngreso">Fecha de Ingreso:</label>
+            <input type="date" id="editarFechaIngreso" required>
+
+            <label for="editarFechaEntrega">Fecha de Entrega:</label>
+            <input type="date" id="editarFechaEntrega" required>
+
+            <button type="button" onclick="guardarCambios()">Guardar Cambios</button>
+        </form>
+    </div>
+
+    <script>
+        let indexEditar = null;  // Variable para almacenar el índice del usuario que se está editando
+
+        document.addEventListener('DOMContentLoaded', cargarDatos);
+
+        function cargarDatos() {
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const listaUsuarios = document.getElementById('listaUsuarios');
+
+            listaUsuarios.innerHTML = '';
+
+            usuarios.forEach((usuario, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.telefono}</td>
+                    <td>${usuario.producto}</td>
+                    <td>${usuario.estado}</td>
+                    <td>${usuario.descripcion}</td>
+                    <td>${usuario.detalles}</td>
+                    <td>${usuario.fechaIngreso}</td>
+                    <td>${usuario.fechaEntrega}</td>
+                    <td>
+                        <button class="btn-editar" onclick="editarUsuario(${index})">Editar</button>
+                        <button class="btn-borrar" onclick="borrarUsuario(${index})">Borrar</button>
+                    </td>
+                `;
+                listaUsuarios.appendChild(row);
+            });
+        }
+
+        function filtrarDatos() {
+            const input = document.getElementById('busqueda').value.toLowerCase();
+            const filas = document.querySelectorAll('#listaUsuarios tr');
+
+            filas.forEach(fila => {
+                const celdas = fila.getElementsByTagName('td');
+                let textoFila = '';
+
+                for (let i = 0; i < celdas.length; i++) {
+                    textoFila += celdas[i].textContent.toLowerCase() + ' ';
+                }
+
+                if (textoFila.includes(input)) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+
+        function borrarUsuario(index) {
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            usuarios.splice(index, 1); 
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            cargarDatos();
+        }
+
+        function editarUsuario(index) {
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuario = usuarios[index];
+
+            // Rellenar los campos del formulario con los datos actuales del usuario
+            document.getElementById('editarNombre').value = usuario.nombre;
+            document.getElementById('editarTelefono').value = usuario.telefono;
+            document.getElementById('editarProducto').value = usuario.producto;
+            document.getElementById('editarEstado').value = usuario.estado;
+            document.getElementById('editarDescripcion').value = usuario.descripcion;
+            document.getElementById('editarDetalles').value = usuario.detalles;
+            document.getElementById('editarFechaIngreso').value = usuario.fechaIngreso;
+            document.getElementById('editarFechaEntrega').value = usuario.fechaEntrega;
+
+            // Mostrar el formulario de edición
+            document.getElementById('editarFormulario').style.display = 'block';
+
+            // Guardar el índice del usuario que se está editando
+            indexEditar = index;
+        }
+
+        function guardarCambios() {
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+            // Actualizar los datos del usuario con los nuevos valores del formulario
+            usuarios[indexEditar].nombre = document.getElementById('editarNombre').value;
+            usuarios[indexEditar].telefono = document.getElementById('editarTelefono').value;
+            usuarios[indexEditar].producto = document.getElementById('editarProducto').value;
+            usuarios[indexEditar].estado = document.getElementById('editarEstado').value;
+            usuarios[indexEditar].descripcion = document.getElementById('editarDescripcion').value;
+            usuarios[indexEditar].detalles = document.getElementById('editarDetalles').value;
+            usuarios[indexEditar].fechaIngreso = document.getElementById('editarFechaIngreso').value;
+            usuarios[indexEditar].fechaEntrega = document.getElementById('editarFechaEntrega').value;
+
+            // Guardar los cambios en localStorage
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+            // Ocultar el formulario de edición y recargar los datos
+            document.getElementById('editarFormulario').style.display = 'none';
+            cargarDatos();
+        }
+    </script>
+
+</body>
+</html>

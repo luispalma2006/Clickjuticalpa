@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Clik Juticalpa</title> 
+    <link rel="stylesheet" href="styles.css">
+    <head>
+        <link rel="icon" href="clik-removebg-preview.png" type="image/png">
+      </head>
+      
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        /* Estilos del encabezado */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #57a3f3;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        /* Menú de navegación */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        .btn {
+            text-decoration: none;
+            background-color: #f7b64d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #e67e22;
+        }
+
+        /* Contenido principal */
+        .content {
+            text-align: center;
+            padding: 60px 20px;
+            margin: 0 auto;
+        }
+
+        .content h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .content .btn {
+            font-size: 18px;
+        }
+
+        /* Ajustes para pantalla pequeña */
+        @media (max-width: 768px) {
+            .logo {
+                width: 100px;
+            }
+
+            .btn {
+                padding: 8px 15px;
+            }
+
+            .content h2 {
+                font-size: 24px;
+            }
+
+            .content p {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 6px 10px;
+            }
+
+            .content h2 {
+                font-size: 20px;
+            }
+
+            .content p {
+                font-size: 14px;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <header>
+    <h1>Clik Juticalpa</h1>
+        <img src="clik-removebg-preview.png" alt="Logo Clik Juticalpa" class="logo">
+    </header>
+
+    <!-- Menú de navegación -->
+    <nav>
+        <ul>
+            <li><a href="Registro.html" class="btn">Ir a Registro</a></li>
+            <li><a href="datos_registrados.html" class="btn">Datos Registrados</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <section class="content">
+        <h2>Bienvenido a Clik Juticalpa</h2>
+        <p>Selecciona una opción para comenzar:</p>
+        <a href="Registro.html" class="btn">Ir a Registro</a>
+    </section>
+
+</body>
+</html>

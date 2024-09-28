@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GERENCIA ClIK</title>
+    <link rel="stylesheet" href="styles.css">
+    <head>
+        <link rel="icon" href="clik-removebg-preview.png" type="image/png">
+    </head>
+    <style>
+        /* Estilos para la factura */
+        #factura {
+            display: none;
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+            position: relative;
+            background-color: white;
+            background-image: url('clik-removebg-preview.png');
+            background-size: 150px;
+            background-position: bottom right;
+            background-repeat: no-repeat;
+        }
+
+        #factura h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #facturaContent {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #factura .factura-info {
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        #factura .factura-info strong {
+            display: inline-block;
+            width: 150px;
+        }
+
+        #facturaImagen {
+            max-width: 150px;
+            margin-left: 20px;
+            align-self: flex-start;
+        }
+
+        .firma {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .firma div {
+            width: 45%;
+            text-align: center;
+        }
+
+        .firma div span {
+            display: block;
+            margin-top: 50px;
+            border-top: 1px solid #000;
+        }
+
+        #facturaHeader {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #facturaDireccion {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        #facturaNumero {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 1.5em; /* Aumentar tamaño de la fuente */
+            color: #333; /* Color más oscuro para mejor visibilidad */
+            font-weight: bold; /* Para hacerlo más llamativo */
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #factura, #factura * {
+                visibility: visible;
+            }
+            #factura {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="clik-removebg-preview.png" alt="Logo Clik Juticalpa" class="logo">
+        <h1>Registro Clik</h1>
+    </header>
+
+    <div class="form-container">
+        <h2>Formulario de Registro</h2>
+        <form id="registroForm">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" required>
+
+            <label for="producto">Producto:</label>
+            <input type="text" id="producto" name="producto" required>
+
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" required>
+                <option value="">Selecciona una opción</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en_progreso">En Progreso</option>
+                <option value="completado">Completado</option>
+            </select>
+
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" name="descripcion" required>
+
+            <label for="detalles">Detalles:</label>
+            <input type="text" id="detalles" name="detalles" required>
+
+            <label for="fecha_ingreso">Fecha de Ingreso:</label>
+            <input type="date" id="fecha_ingreso" name="fecha_ingreso" required>
+
+            <label for="fecha_entrega">Fecha de Entrega:</label>
+            <input type="date" id="fecha_entrega" name="fecha_entrega" required>
+
+            <label for="imagen">Subir Imagen:</label>
+            <input type="file" id="imagen" accept="image/*" onchange="previewImage(event)">
+            <img id="imagePreview" src="" alt="Previsualización de Imagen" style="max-width: 150px;">
+
+            <button type="button" class="btn" onclick="generarFactura()">Generar Ticket</button>
+            <button type="button" class="btn" onclick="imprimirFactura()">Imprimir Ticket</button>
+            <button type="submit" class="btn">Registrarse</button>
+        </form>
+    </div>
+
+    <div id="factura">
+        <div id="facturaHeader">
+            <h2>CLIK JUTICALPA</h2>
+            <div id="facturaDireccion">
+                BO. CENTRO, 6TA CALLE,<br>
+                FRENTE A COMERCIAL KEREN JUTICALPA,<br>
+                OLANCHO, HONDURAS<br>
+                27857302 / 96240392 / 95515730
+            </div>
+            <!-- Mover aquí el número del ticket -->
+            <div id="facturaNumero">Número de Ticket: <span id="numeroImpresion"></span></div>
+        </div>
+        <div id="facturaContent">
+            <div>
+                <div class="factura-info">
+                    <strong>Nombre:</strong> <span id="facturaNombre"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Teléfono:</strong> <span id="facturaTelefono"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Producto:</strong> <span id="facturaProducto"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Estado:</strong> <span id="facturaEstado"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Descripción:</strong> <span id="facturaDescripcion"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Detalles:</strong> <span id="facturaDetalles"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Fecha de Ingreso:</strong> <span id="facturaFechaIngreso"></span>
+                </div>
+                <div class="factura-info">
+                    <strong>Fecha de Entrega:</strong> <span id="facturaFechaEntrega"></span>
+                </div>
+            </div>
+            <img id="facturaImagen" src="" alt="Imagen del Producto">
+        </div>
+
+        <div class="firma">
+            <div>
+                <span>Firma del Cliente</span>
+            </div>
+            <div>
+                <span>Firma Soporte Tecnico</span>
+            </div>
+        </div>
+
+        <div id="facturaNota" style="margin-top: 20px; font-size: 0.9em; text-align: center;">
+            Esta hoja indica el estado en que se recibió el equipo, asi como accesorios recibidos, despues de diagnosticado reparado se le notificara mediante whatsapp, tiene un plazo de 30 dias para retirar su equipo, de lo contario se procedera a tirarlo, vender o subastar dicho articulo para cubrir gastos de reparacion.
+        </div>
+    </div>
+
+    <script>
+        let numeroImpresion = localStorage.getItem('numeroImpresion') || 0;
+
+        // Mantengo el almacenamiento en localStorage y luego actualizo la factura
+        document.getElementById('registroForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const nombre = document.getElementById('nombre').value;
+            const telefono = document.getElementById('telefono').value;
+            const producto = document.getElementById('producto').value;
+            const estado = document.getElementById('estado').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const detalles = document.getElementById('detalles').value;
+            const fechaIngreso = document.getElementById('fecha_ingreso').value;
+            const fechaEntrega = document.getElementById('fecha_entrega').value;
+
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+            usuarios.push({
+                nombre,
+                telefono,
+                producto,
+                estado,
+                descripcion,
+                detalles,
+                fechaIngreso,
+                fechaEntrega
+            });
+
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+            // Actualizar la factura
+            generarFactura();
+
+            // Redirigir a la página de datos registrados
+            window.location.href = 'datos_registrados.html';
+        });
+
+        function generarFactura() {
+            numeroImpresion++;
+            document.getElementById('numeroImpresion').innerText = numeroImpresion;
+            localStorage.setItem('numeroImpresion', numeroImpresion);
+
+            document.getElementById('facturaNombre').innerText = document.getElementById('nombre').value;
+            document.getElementById('facturaTelefono').innerText = document.getElementById('telefono').value;
+            document.getElementById('facturaProducto').innerText = document.getElementById('producto').value;
+            document.getElementById('facturaEstado').innerText = document.getElementById('estado').value;
+            document.getElementById('facturaDescripcion').innerText = document.getElementById('descripcion').value;
+            document.getElementById('facturaDetalles').innerText = document.getElementById('detalles').value;
+            document.getElementById('facturaFechaIngreso').innerText = document.getElementById('fecha_ingreso').value;
+            document.getElementById('facturaFechaEntrega').innerText = document.getElementById('fecha_entrega').value;
+
+            const factura = document.getElementById('factura');
+            factura.style.display = 'block';
+        }
+
+        function imprimirFactura() {
+            window.print();
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const output = document.getElementById('imagePreview');
+                output.src = reader.result;
+
+                const facturaImg = document.getElementById('facturaImagen');
+                facturaImg.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+
+</body>
+</html>
